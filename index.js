@@ -4,7 +4,7 @@ const {MongoClient} = require("mongodb");
 const uri = "mongodb://localhost:27017/?maxPoolSize=20";
 const clientMongoDb = new MongoClient(uri);
 
-/*
+/* Lista de usuarios que tendrán acceso a la información que recolectan los sensores
 username - password
 mqttx - mqttx
 ruth - ruth
@@ -13,11 +13,13 @@ pamela - pamela
 katherine - katherine
 joham - joham
 */
+
+
 let client = mqtt.connect({
     host: "44.201.203.33",
     port: 1883,
-    username: "ruth", // cambiar mqttx
-    password: "ruth" // cambiar mqttx
+    username: "mqttx",
+    password: "mqttx"
 });
 
 client.on("connect", function () {
