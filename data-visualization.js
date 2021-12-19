@@ -52,31 +52,37 @@ app.get("/dashboard", function (req, res) {
 })
 
 app.get("/temperature-sensor", function (req, res) {
-    res.sendFile(__dirname + "/view/temperature-analytics.html");
 
-    clientMongoDb.db("iot-database")
-        .collection('temperature-sensor')
-        .find({})
-        .limit(10)
-        .toArray(function (err, res) {
-            if (err) throw err;
-            else {
-                console.log(res);
-            }
-        })
+    io.on("connection", function (socket){
+        clientMongoDb.db("iot-database")
+            .collection('temperature-sensor')
+            .find({})
+            .limit(10)
+            .toArray(function (err, res) {
+                if (err) throw err;
+                else {
+                    console.log("Sending data ...")
+                    socket.emit('data',res);
+                }
+            })
+    });
+    res.sendFile(__dirname + "/view/temperature-analytics.html");
 })
 
 app.get("/light-sensor", function (req, res) {
-    res.sendFile(__dirname + "/view/light-analytics.html");
+    io.on("connection", function (socket){
+        clientMongoDb.db("iot-database")
+            .collection('light-sensor')
+            .find({})
+            .limit(10)
+            .toArray(function (err, res) {
+                if (err) throw err;
+                else {
+                    console.log("Sending data ...")
+                    socket.emit('data',res);
+                }
+            })
+    });
 
-    clientMongoDb.db("iot-database")
-        .collection('light-sensor')
-        .find({})
-        .limit(10)
-        .toArray(function (err, res) {
-            if (err) throw err;
-            else {
-                console.log(res);
-            }
-        })
+    res.sendFile(__dirname + "/view/light-analytics.html");
 })

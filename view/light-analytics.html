@@ -13,6 +13,15 @@
     <script src="socket.io/socket.io.js"></script>
      <script>
         const socket = io()
+
+        // Check for connection
+        if(socket !== undefined) {
+            console.log('Connected to socket...');
+            socket.on('data', function (data) {
+                console.log(data);
+            });
+        }
+
     </script>
 </head>
 <body class="sb-nav-fixed">

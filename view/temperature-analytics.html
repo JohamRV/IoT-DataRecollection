@@ -11,7 +11,19 @@
     <link href="./view/css/styles.css"/>
     <script src="./view/js/canvas.js"></script>
     <script src="./view/js/all-min.js"></script>
+    <script src="socket.io/socket.io.js"></script>
+    <script>
+        const socket = io()
 
+        // Check for connection
+        if(socket !== undefined) {
+            console.log('Connected to socket...');
+            socket.on('data', function (data) {
+                console.log(data);
+            });
+        }
+
+    </script>
 </head>
 <body class="sb-nav-fixed">
 <!-- Navbar -->
