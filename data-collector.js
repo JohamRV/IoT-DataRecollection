@@ -1,10 +1,12 @@
+//Abre conexión con mqtt
 const mqtt = require('mqtt');
 const {MongoClient} = require("mongodb");
 
-const uri = "mongodb://3.95.224.80:27017/?maxPoolSize=20";
+//Url para poder conectarse con la base de datos, contiene su dirección IP y puerto para conectarse
+const uri = "mongodb://localhost:27017/?maxPoolSize=20";
 const clientMongoDb = new MongoClient(uri);
 
-/*
+/* Lista de usuarios que tendrán acceso a la información que recolectan los sensores
 username - password
 mqttx - mqttx
 ruth - ruth
@@ -13,18 +15,22 @@ pamela - pamela
 katherine - katherine
 joham - joham
 */
+
+//Conexión del cliente por mqtt
 let client = mqtt.connect({
     host: "44.201.203.33",
     port: 1883,
-    username: "ruth", // cambiar mqttx
-    password: "ruth" // cambiar mqttx
+    username: "mqttx",
+    password: "mqttx"
 });
+
 
 client.on("connect", function () {
     console.log("conexión MQTT exitosa");
     client.subscribe("iot-platform/#"); // iot-platform/dev1/temperature-sensor    iot-platform/dev2/light-sensor
 });
 
+//Obtiene la información del JSON que tiene la información de la recolección de datos
 client.on("message", function (topic, messageData) {
 
     let message = JSON.parse(messageData.toString());
@@ -71,6 +77,8 @@ client.on("message", function (topic, messageData) {
 
 });
 
+
+//Guardado de información del sensor de temperatura
 function grabarSensorTempData(deviceId, deviceType, value, timeCollect) {
     let mongoDb = clientMongoDb.db("iot-database");
     let document = mongoDb.collection("temperature-sensor");
@@ -99,6 +107,7 @@ function grabarSensorTempData(deviceId, deviceType, value, timeCollect) {
         });
 }
 
+//Guardado de información del sensor de luz
 function grabarSensorLigthData(deviceId, deviceType, mensaje, timeCollect) {
     let mongoDb = clientMongoDb.db("iot-database");
     let document = mongoDb.collection("light-sensor-ts");
