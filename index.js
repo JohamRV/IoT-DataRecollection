@@ -1,29 +1,23 @@
 const mqtt = require('mqtt');
-const {Pool} = require('pg');
 const {MongoClient} = require("mongodb");
 
 const uri = "mongodb://localhost:27017/?maxPoolSize=20";
-
 const clientMongoDb = new MongoClient(uri);
 
-const pool = new Pool({
-    host: "localhost",
-    user: "postgres",
-    password: "root",
-    database: "clase9",
-    port: 5432
-});
-
-pool.on('error', (err, client) => {
-    console.error('Unexpected error on idle client', err)
-    process.exit(-1)
-})
-
+/*
+username - password
+mqttx - mqttx
+ruth - ruth
+samuel - samuel
+pamela - pamela
+katherine - katherine
+joham - joham
+*/
 let client = mqtt.connect({
     host: "44.201.203.33",
     port: 1883,
-    username: "",
-    password: ""
+    username: "ruth", // cambiar mqttx
+    password: "ruth" // cambiar mqttx
 });
 
 client.on("connect", function () {
@@ -79,7 +73,7 @@ client.on("message", function (topic, messageData) {
 
 function grabarSensorTempData(deviceId, deviceType, value, timeCollect) {
     let mongoDb = clientMongoDb.db("iot-database");
-    let document = mongoDb.collection("temperature-sensor-ts");
+    let document = mongoDb.collection("temperature-sensor");
 
     let fecha = new Date(); // fecha a la que se guardó
     let dataGuardar = {
