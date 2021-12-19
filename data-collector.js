@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
 const {MongoClient} = require("mongodb");
 
-const uri = "mongodb://localhost:27017/?maxPoolSize=20";
+const uri = "mongodb://3.95.224.80:27017/?maxPoolSize=20";
 const clientMongoDb = new MongoClient(uri);
 
 /*
