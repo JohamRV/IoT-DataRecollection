@@ -79,6 +79,7 @@ io.on("connection",  function (socket){
                 dataToSend.push([cont,10])
             }
             console.log(dataToSend)
+            // delay(10000)
             io.emit('data2',dataToSend);
             cont++;
         })
