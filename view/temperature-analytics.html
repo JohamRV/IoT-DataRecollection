@@ -11,17 +11,17 @@
     <link href="./view/css/styles.css"/>
     <script src="./view/js/canvas.js"></script>
     <script src="./view/js/all-min.js"></script>
-    <script src="socket.io/socket.io.js"></script>
+    <script src="https://cdn.socket.io/4.4.0/socket.io.min.js" integrity="sha384-1fOn6VtTq3PWwfsOrk45LnYcGosJwzMHv+Xh/Jx5303FVOXzEnw0EpLv30mtjmlj" crossorigin="anonymous"></script>
     <script>
-        const socket = io()
+        const socket = io.connect('http://localhost:3000')
+        const id = "TEMP-DASHBOARD"
+        // sending ID - temp
+        socket.emit('tempCall', id)
 
         // Check for connection
-        if(socket !== undefined) {
-            console.log('Connected to socket...');
-            socket.on('data', function (data) {
-                console.log(data);
-            });
-        }
+        socket.on('data', function (data) {
+            console.log(data);
+        });
 
     </script>
 </head>
@@ -136,7 +136,7 @@
 <script src="./view/js/chart-min.js"></script>
 <script src="./view/assets/charts/chart-multi-timeline.js"></script>
 <script src="./view/assets/charts/chart-bar.js"></script>
-<script src="./view/assets/charts/chart-pie.js"></script>
+<!--<script src="./view/assets/charts/chart-pie.js"></script>-->
 <script src="./view/js/datatables-simple-demo.js"></script>
 
 </body>

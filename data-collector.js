@@ -3,9 +3,9 @@ const mqtt = require('mqtt');
 const {MongoClient} = require("mongodb");
 
 //Url para poder conectarse con la base de datos, contiene su dirección IP y puerto para conectarse
-const uri = "mongodb://localhost:27017/?maxPoolSize=20";
+const uri = "mongodb://3.95.224.80:27017/?maxPoolSize=20";
 const clientMongoDb = new MongoClient(uri);
-
+const PORT = 1883;
 /* Lista de usuarios que tendrán acceso a la información que recolectan los sensores
 username - password
 mqttx - mqttx
@@ -19,14 +19,14 @@ joham - joham
 //Conexión del cliente por mqtt
 let client = mqtt.connect({
     host: "44.201.203.33",
-    port: 1883,
+    port: PORT,
     username: "mqttx",
     password: "mqttx"
 });
 
 
 client.on("connect", function () {
-    console.log("conexión MQTT exitosa");
+    console.log("conexión MQTT exitosa sobre el puerto "  + PORT);
     client.subscribe("iot-platform/#"); // iot-platform/dev1/temperature-sensor    iot-platform/dev2/light-sensor
 });
 
