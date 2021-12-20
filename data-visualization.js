@@ -30,38 +30,20 @@ server.listen(3000,  () => {
 
 // styles sheets and scripts
 app.use('/view', express.static(__dirname + '/view'));
-// app.use('/view/js', express.static(__dirname + '/view/js'));
 // app.use('/view/assets', express.static(__dirname + '/view/assets'));
-
-// rutas
-// app.get("/dashboard", function (req, res) {
-//     res.sendFile(__dirname + "/view/dashboard.html");
-//
-//     clientMongoDb.db("iot-database")
-//         .collection('temperature-sensor')
-//         .find({})
-//         .limit(10)
-//         .toArray(function (err, res) {
-//             if (err) throw err;
-//             else {
-//                 console.log(res);
-//             }
-//         })
-//
-//     clientMongoDb.db("iot-database")
-//         .collection('light-sensor')
-//         .find({})
-//         .limit(10)
-//         .toArray(function (err, res) {
-//             if (err) throw err;
-//             else {
-//                 console.log(res);
-//             }
-//         })
-// })
+// app.use('/view/js', express.static(__dirname + '/view/js'));
+// app.use('/view/css', express.static(__dirname + '/view/css'));
 
 app.get("/temperature-sensor",  function (req, res) {
     res.sendFile(__dirname + "/view/temperature-analytics.html");
+})
+
+app.get("/light-sensor",  function (req, res) {
+    res.sendFile(__dirname + "/view/light-analytics.html");
+})
+
+app.get("/dashboard",  function (req, res) {
+    res.sendFile(__dirname + "/view/dashboard.html");
 })
 
 io.on("connection",  function (socket){
@@ -111,20 +93,3 @@ const getCollectionSorted = (sortIndex, database, collection) => {
         .sort({fechaEnviada : sortIndex})
 }
 
-// app.get("/light-sensor", function (req, res) {
-//     io.on("connection", function (socket){
-//         clientMongoDb.db("iot-database")
-//             .collection('light-sensor')
-//             .find({})
-//             .limit(10)
-//             .toArray(function (err, res) {
-//                 if (err) throw err;
-//                 else {
-//                     console.log("Sending data ...")
-//                     socket.emit('data',res);
-//                 }
-//             })
-//     });
-//
-//     res.sendFile(__dirname + "/view/light-analytics.html");
-// })
