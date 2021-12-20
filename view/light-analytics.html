@@ -8,6 +8,8 @@
     <meta name="author" content=""/>
     <title>Light Sensor</title>
     <link href="./view/css/styles.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+    <script src="socket.io/socket.io.js"></script>
     <script>
         window.onload = function() {
             const socket = io.connect('http://localhost:3000')
@@ -16,56 +18,41 @@
             socket.emit('lightCall', id)
 
             // Check for connection
-            socket.on('data', function (data) {
-                console.log(data);
-            });
+            socket.on('data2', function (lightData) {
 
-            var dataPoints = [];
+                console.log(lightData);
+                // TIMELINE
+                var dataPoints = [];
+                var chart = new CanvasJS.Chart("chartContainer", {
+                    theme: "light2",
+                    axisX: {
+                        valueFormatString: "DD/MM/YY"
+                    },
+                    data: [{
+                        type: "line",
+                        dataPoints: dataPoints
+                    }]
+                });
+                updateData();
 
-            var chart = new CanvasJS.Chart("chartContainer", {
-                theme: "light2",
-                title: {
-                    text: "Live Data"
-                },
-                data: [{
-                    type: "line",
-                    dataPoints: dataPoints
-                }]
-            });
-            updateData();
+                // Initial Values
+                var newDataCount = 6;
 
-            // Initial Values
-            var xValue = 0;
-            var yValue = 10;
-            var newDataCount = 6;
+                function addData(data) {
+                    if(newDataCount != 1) {
+                        $.each(data, function (key, value) {
+                            dataPoints.push({x: value[0], y: parseInt(value[1])});
+                        });
+                    }
 
-            function addData(data) {
-                if(newDataCount != 1) {
-                    $.each(data, function(key, value) {
-                        dataPoints.push({x: value[0], y: parseInt(value[1])});
-                        xValue++;
-                        yValue = parseInt(value[1]);
-                    });
-                } else {
-                    //dataPoints.shift();
-                    dataPoints.push({x: data[0][0], y: parseInt(data[0][1])});
-                    xValue++;
-                    yValue = parseInt(data[0][1]);
+                    newDataCount = 1;
+                    chart.render();
                 }
-
-                newDataCount = 1;
-                chart.render();
-                setTimeout(updateData, 500);
-            }
-
-            function updateData() {
-                $.getJSON("https://canvasjs.com/services/data/datapoints.php?xstart="+xValue+"&ystart="+yValue+"&length="+newDataCount+"type=json&callback=?", addData);
-            }
+                function updateData() {addData(lightData);}
+            });
 
         }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
-    <script src="socket.io/socket.io.js"></script>
 </head>
 <body class="sb-nav-fixed">
 <!-- Navbar -->
@@ -102,12 +89,12 @@
                         </nav>
                     </div>
 
-                    <div class="sb-sidenav-menu-heading">Profile</div>
-                    <!-- TODO LINKEAR-->
-                    <a class="nav-link" href="#">
-                        <div class="sb-nav-link-icon"><i class="fa fa-sign-out"></i></div>
-                        Log Out
-                    </a>
+                    <!--                    <div class="sb-sidenav-menu-heading">Profile</div>-->
+                    <!--                    &lt;!&ndash; TODO LINKEAR&ndash;&gt;-->
+                    <!--                    <a class="nav-link" href="#">-->
+                    <!--                        <div class="sb-nav-link-icon"><i class="fa fa-sign-out"></i></div>-->
+                    <!--                        Log Out-->
+                    <!--                    </a>-->
                 </div>
             </div>
         </nav>
@@ -121,53 +108,26 @@
                     <li class="breadcrumb-item active">Light Sensor</li>
                 </ol>
                 <div class="row">
-                    <div class="col-xl-6">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-chart-area me-1"></i>
-                                Dynamic Chart Example
-                            </div>
-                            <div class="card-body">
-                                <div id="chartContainer" style="height: 370px; max-width: 920px; margin: 0px auto;"></div>
-                            </div>
-                            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            Dynamic Chart Example
+                        </div>
+                        <div class="card-body">
+                            <div id="chartContainer" style="height: 370px; max-width: 920px; margin: 0px auto;"></div>
+                        </div>
+                        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
 
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-chart-bar me-1"></i>
-                                Bar Chart Example
-                            </div>
-                            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-                        </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl-6">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-chart-area me-1"></i>
-                                Area Chart Example
-                            </div>
-                            <div class="card-body">
-                                <canvas id="myAreaChart" width="100%" height="40"></canvas>
-                            </div>
-                            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            Area Chart Example
                         </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-chart-bar me-1"></i>
-                                Bar Chart Example
-                            </div>
-                            <div class="card-body">
-                                <canvas id="myBarChart" width="100%" height="40"></canvas>
-                            </div>
-                            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                        <div class="card-body">
+                            <canvas id="myAreaChart" width="100%" height="40"></canvas>
 
                         </div>
                     </div>

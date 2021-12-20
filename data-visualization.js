@@ -51,11 +51,14 @@ io.on("connection",  function (socket){
 
     socket.on("tempCall", function(id){
         console.log("Sending data for "+ id);
-
         let tempData = getCollectionSorted(1,database.name,database.collections.temp)
+        let dataToSend = [];
+        let cont = 0;
         tempData.forEach((element)=>{
-            console.log(element);
-            io.emit('data',element);
+            // getFormatDate(element.fechaEnviada)
+            dataToSend.push([cont,element.temperature]) //element.timestamp
+            io.emit('data',dataToSend);
+            cont++;
         })
     });
 
@@ -63,9 +66,21 @@ io.on("connection",  function (socket){
         console.log("Sending data for "+ id);
 
         let lightData = getCollectionSorted(1, database.name, database.collections.light)
+        let dataToSend = [];
+        let cont = 0;
         lightData.forEach((element)=>{
-            console.log(element);
-            io.emit('data',element);
+
+            console.log(element.mensaje)
+            if (element.mensaje == "No se detectó presencia"){
+                dataToSend.push([cont,0])
+            }else if (element.mensaje == "Se detectó presencia"){
+                dataToSend.push([cont,10])
+            } else {
+                dataToSend.push([cont,10])
+            }
+            console.log(dataToSend)
+            io.emit('data2',dataToSend);
+            cont++;
         })
     });
 
@@ -74,6 +89,8 @@ io.on("connection",  function (socket){
 
         let lightData = getCollectionSorted(1, database.name, database.collections.light)
         let tempData = getCollectionSorted(1,database.name,database.collections.temp)
+
+
         tempData.forEach((element)=> {
             console.log(element);
             io.emit('data', element);
@@ -91,5 +108,16 @@ const getCollectionSorted = (sortIndex, database, collection) => {
         .collection(collection)
         .find({})
         .sort({fechaEnviada : sortIndex})
+    // .limit(50)
 }
 
+const getFormatDate = (str) => {
+    return new Date(
+        parseInt(str.split('T')[0]('-')[0]),
+        parseInt(str.split('T')[0]('-')[1])-1,
+        parseInt(str.split('T')[0]('-')[2]),
+        parseInt(str.split('T')[1](':')[0]),
+        parseInt(str.split('T')[1](':')[1]),
+        parseInt(str.split('T')[1](':')[2])
+        );
+}

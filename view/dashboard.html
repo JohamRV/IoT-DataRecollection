@@ -17,23 +17,16 @@
             socket.emit('mainCall', id)
 
             // Check for connection
-            socket.on('data', function (data) {
+            socket.on('data3', function (data) {
                 console.log(data);
-            });
 
             var dataPoints1 = [];
             var dataPoints2 = [];
 
             var chart = new CanvasJS.Chart("chartContainer", {
                 zoomEnabled: true,
-                title: {
-                    text: "Share Value of Two Companies"
-                },
-                axisX: {
-                    title: "chart updates every 3 secs"
-                },
                 axisY:{
-                    prefix: "$",
+                    sufix: "°C",
                     includeZero: false
                 },
                 toolTip: {
@@ -49,7 +42,7 @@
                 data: [{
                     type: "line",
                     xValueType: "dateTime",
-                    yValueFormatString: "$####.00",
+                    yValueFormatString: "##°C",
                     xValueFormatString: "hh:mm:ss TT",
                     showInLegend: true,
                     name: "Company A",
@@ -118,7 +111,7 @@
             // generates first set of dataPoints
             updateChart(100);
             setInterval(function(){updateChart()}, updateInterval);
-
+            });
         }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
@@ -160,12 +153,12 @@
                         </nav>
                     </div>
 
-                    <div class="sb-sidenav-menu-heading">Profile</div>
-                    <!-- TODO LINKEAR-->
-                    <a class="nav-link" href="#">
-                        <div class="sb-nav-link-icon"><i class="fa fa-sign-out"></i></div>
-                        Log Out
-                    </a>
+                    <!--                    <div class="sb-sidenav-menu-heading">Profile</div>-->
+                    <!--                    &lt;!&ndash; TODO LINKEAR&ndash;&gt;-->
+                    <!--                    <a class="nav-link" href="#">-->
+                    <!--                        <div class="sb-nav-link-icon"><i class="fa fa-sign-out"></i></div>-->
+                    <!--                        Log Out-->
+                    <!--                    </a>-->
                 </div>
             </div>
         </nav>
@@ -189,29 +182,15 @@
                     <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-6">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-chart-bar me-1"></i>
-                                Histogram
-                            </div>
-                            <div class="card-body">
-                                <canvas id="myBarChart" width="100%" height="50"></canvas>
-                            </div>
-                            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            Histogram
                         </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-chart-pie me-1"></i>
-                                Pie Chart Example
-                            </div>
-                            <div class="card-body">
-                                <canvas id="myPieChart" width="100%" height="50"></canvas>
-                            </div>
-                            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                        <div class="card-body">
+                            <canvas id="myBarChart" width="100%" height="50"></canvas>
                         </div>
+                        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                     </div>
                 </div>
 

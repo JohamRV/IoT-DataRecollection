@@ -8,64 +8,121 @@
     <meta name="author" content=""/>
     <title>Temperature Sensor</title>
     <link href="./view/css/styles.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+    <script src="socket.io/socket.io.js"></script>
     <script>
         window.onload = function() {
             const socket = io.connect('http://localhost:3000')
+            const button = $("#reload");
+
+            console.log(button)
+            // TODO
+            function reloadFunc() {
+                console.log("click")
+                socket.emit('tempCall', id)
+            }
             const id = "TEMP-DASHBOARD"
             // sending ID - temp
             socket.emit('tempCall', id)
 
-            // Check for connection
-            socket.on('data', function (data) {
-                console.log(data);
-            });
-
-            var dataPoints = [];
-
-            var chart = new CanvasJS.Chart("chartContainer", {
-                theme: "light2",
-                title: {
-                    text: "Live Data"
-                },
-                data: [{
-                    type: "line",
-                    dataPoints: dataPoints
-                }]
-            });
-            updateData();
-
-            // Initial Values
-            var xValue = 0;
-            var yValue = 10;
-            var newDataCount = 6;
-
-            function addData(data) {
-                if(newDataCount != 1) {
-                    $.each(data, function(key, value) {
-                        dataPoints.push({x: value[0], y: parseInt(value[1])});
-                        xValue++;
-                        yValue = parseInt(value[1]);
-                    });
-                } else {
-                    //dataPoints.shift();
-                    dataPoints.push({x: data[0][0], y: parseInt(data[0][1])});
-                    xValue++;
-                    yValue = parseInt(data[0][1]);
+            socket.on('stadistics', function(tempData){
+                // MULTITIMELINE
+                var chartMultiLine = new CanvasJS.Chart("chartContainer", {
+                    title: {
+                        text: "Temperture Stadistics"
+                    },
+                    axisX: {
+                        valueFormatString: "DD/MM/YY"
+                    },
+                    axisY2: {
+                        title: "Median Tempereture",
+                        suffix: "°C"
+                    },
+                    toolTip: {
+                        shared: true
+                    },
+                    legend: {
+                        cursor: "pointer",
+                        verticalAlign: "top",
+                        horizontalAlign: "center",
+                        dockInsidePlotArea: true,
+                        itemclick: toogleDataSeries
+                    },
+                    data: [
+                        {
+                            type:"line",
+                            axisYType: "secondary",
+                            name: "Average",
+                            showInLegend: true,
+                            markerSize: 0,
+                            yValueFormatString: "##°C",
+                            dataPoints: [{}]
+                        },
+                        {
+                            type:"line",
+                            axisYType: "secondary",
+                            name: "Minimum",
+                            showInLegend: true,
+                            markerSize: 0,
+                            yValueFormatString: "##°C",
+                            dataPoints: [{}]
+                        },
+                        {
+                            type:"line",
+                            axisYType: "secondary",
+                            name: "Maximum",
+                            showInLegend: true,
+                            markerSize: 0,
+                            yValueFormatString: "##°C",
+                            dataPoints: [{}]
+                        }]
+                });
+                chartMultiLine.render();
+                function toogleDataSeries(e){
+                    if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                        e.dataSeries.visible = false;
+                    } else{
+                        e.dataSeries.visible = true;
+                    }
+                    chart.render();
                 }
+            })
 
-                newDataCount = 1;
-                chart.render();
-                setTimeout(updateData, 500);
-            }
+            // Check for connection
+            socket.on('data', function (tempData) {
+                // console.log(tempData);
+                // TIMELINE
+                var dataPoints = [];
+                var chart = new CanvasJS.Chart("chartContainer", {
+                    theme: "light2",
+                    axisX: {
+                        valueFormatString: "DD/MM/YY"
+                    },
+                    data: [{
+                        type: "line",
+                        dataPoints: dataPoints
+                    }]
+                });
+                updateData();
 
-            function updateData() {
-                $.getJSON("https://canvasjs.com/services/data/datapoints.php?xstart="+xValue+"&ystart="+yValue+"&length="+newDataCount+"type=json&callback=?", addData);
-            }
+                // Initial Values
+                var newDataCount = 6;
+
+                function addData(data) {
+                    if(newDataCount != 1) {
+                        $.each(data, function (key, value) {
+                            dataPoints.push({x: value[0], y: parseInt(value[1])});
+                        });
+                    }
+
+                    newDataCount = 1;
+                    chart.render();
+                }
+                function updateData() {addData(tempData);}
+            });
 
         }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
-    <script src="socket.io/socket.io.js"></script>
 </head>
 <body class="sb-nav-fixed">
 <!-- Navbar -->
@@ -102,12 +159,12 @@
                         </nav>
                     </div>
 
-                    <div class="sb-sidenav-menu-heading">Profile</div>
-                    <!-- TODO LINKEAR-->
-                    <a class="nav-link" href="#">
-                        <div class="sb-nav-link-icon"><i class="fa fa-sign-out"></i></div>
-                        Log Out
-                    </a>
+<!--                    <div class="sb-sidenav-menu-heading">Profile</div>-->
+<!--                    &lt;!&ndash; TODO LINKEAR&ndash;&gt;-->
+<!--                    <a class="nav-link" href="#">-->
+<!--                        <div class="sb-nav-link-icon"><i class="fa fa-sign-out"></i></div>-->
+<!--                        Log Out-->
+<!--                    </a>-->
                 </div>
             </div>
         </nav>
@@ -122,47 +179,30 @@
                 </ol>
 
                 <div class="row">
-                    <div class="col-xl-6">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-chart-area me-1"></i>
-                                Dynamic Chart Example
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-10 d-flex align-items-center">
+                                    <i class="fas fa-chart-area me-1"></i>
+                                    TimeLine Tempereture Data
+                                </div>
+                                <div class="col-1">
+                                    <button class="btn btn-primary" id="reload" onclick="reloadFunc()"><i class="fas fa-redo-alt"></i>  </button>
+                                </div>
                             </div>
-                            <div id="chartContainer" style="height: 300px; width: 100%;"></div>
                         </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-chart-bar me-1"></i>
-                                Bar Chart Example
-                            </div>
-                            <!-- <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>-->
-                        </div>
+                        <div id="chartContainer" style="height: 300px; width: 100%;"></div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl-6">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-chart-area me-1"></i>
-                                Area Chart Example
-                            </div>
-                            <div class="card-body">
-                                <canvas id="myAreaChart" width="100%" height="40"></canvas>
-
-                            </div>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            Area Chart Example
                         </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-chart-bar me-1"></i>
-                                Bar Chart Example
-                            </div>
-                            <div class="card-body">
-                                <canvas id="myBarChart" width="100%" height="40"></canvas>
-                            </div>
+                        <div class="card-body">
+                            <canvas id="myAreaChart" width="100%" height="40"></canvas>
+
                         </div>
                     </div>
                 </div>
@@ -173,6 +213,7 @@
 
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script src="./view/js/scripts.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
@@ -183,5 +224,6 @@
 <!-- NO VENIAN EN EL TEMPLATE -->
 <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
 <script src="./view/canvasjs.min.js"></script>
+
 </body>
 </html>
