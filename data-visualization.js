@@ -4,7 +4,7 @@ const {createServer} = require('http');
 const { Server } = require('socket.io');
 const {MongoClient} = require('mongodb');
 
-const uri = "mongodb://localhost:27017/?maxPoolSize=20";
+const uri = "mongodb://3.95.224.80:27017/?maxPoolSize=20";
 const clientMongoDb =  new MongoClient(uri);
 
 const app = express();
@@ -89,15 +89,26 @@ io.on("connection",  function (socket){
 
         let lightData = getCollectionSorted(1, database.name, database.collections.light)
         let tempData = getCollectionSorted(1,database.name,database.collections.temp)
-
+        let dataToSend1 = [];
+        let dataToSend2 = [];
 
         tempData.forEach((element)=> {
             console.log(element);
             io.emit('data', element);
         })
+
         lightData.forEach((element)=>{
-            console.log(element);
-            io.emit('data',element);
+            console.log(element.mensaje)
+            if (element.mensaje == "No se detectó presencia"){
+                dataToSend.push([cont,0])
+            }else if (element.mensaje == "Se detectó presencia"){
+                dataToSend.push([cont,10])
+            } else {
+                dataToSend.push([cont,10])
+            }
+            console.log(dataToSend)
+            io.emit('data2',dataToSend);
+            cont++;
         })
     });
 
